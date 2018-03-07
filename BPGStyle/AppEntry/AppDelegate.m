@@ -17,6 +17,47 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000
+    if (@available(iOS 11.0, *)){
+        [UITableView appearance].estimatedRowHeight = 0;
+        [UITableView appearance].estimatedSectionHeaderHeight = 0;
+        [UITableView appearance].estimatedSectionFooterHeight = 0;
+        [UIScrollView appearance].contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    }
+#else
+#endif
+    [application setStatusBarOrientation:UIInterfaceOrientationPortrait];
+    UIApplication *app = [UIApplication sharedApplication];
+    app.statusBarStyle = UIStatusBarStyleLightContent;
+    [UIApplication sharedApplication].statusBarHidden = NO;
+
+    self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    self.window.backgroundColor = [UIColor whiteColor];
+    [self.window makeKeyAndVisible];
+    //*********网络*************************
+    //捕获未知异常
+    NSSetUncaughtExceptionHandler(&UncaughtExceptionHandler);
+    [NSThread sleepForTimeInterval:2];
+
+
+    
+    //********开机层级*********************
+    /**1*  添加站位rootVc*/
+    self.window.rootViewController = [[TabBarViewController alloc]init];
+
+
+
+    //********key方法**********************
+    [self keep_UUID];
+    //weixin alipay 支付
+
+
+
+    //*********推送*************************
+
+
+
+
     return YES;
 }
 
@@ -46,6 +87,47 @@
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
+
+//*******************网络***********************************************************************************
+//捕获未知异常
+void UncaughtExceptionHandler(NSException *exception) {
+    /**
+     *  获取异常崩溃信息
+     */
+    NSArray *callStack = [exception callStackSymbols];
+    NSString *reason = [exception reason];
+    NSString *name = [exception name];
+    NSString *content = [NSString stringWithFormat:@"========异常错误报告========\nname:%@\nreason:\n%@\ncallStackSymbols:\n%@",name,reason,[callStack componentsJoinedByString:@"\n"]];
+    NSLog(@"异常错误报告 : \n%@", content);
+
+}
+
+//*******************似有方法***********************************************************************************
+
+
+#pragma mark 生成UUID
+- (void)keep_UUID
+{
+    NSString * deviceToken = KDefaultsAppdeviceToken;
+    if (deviceToken == nil || deviceToken.length == 0) {
+        NSLog(@"GEN  %@", [self gen_uuid]);
+        deviceToken = [[self gen_uuid] stringByReplacingOccurrencesOfString:@"-" withString:@""];
+        [[NSUserDefaults standardUserDefaults] setObject:deviceToken forKey:KAppdeviceToken];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+}
+- (NSString *)gen_uuid
+{
+    CFUUIDRef uuid_ref=CFUUIDCreate(NULL);
+    CFStringRef uuid_string_ref=CFUUIDCreateString(NULL, uuid_ref);
+    CFRelease(uuid_ref);
+    NSString *uuid = [NSString stringWithString:CFBridgingRelease(uuid_string_ref)];
+    return uuid;
+}
+
+
+
+
 
 
 @end

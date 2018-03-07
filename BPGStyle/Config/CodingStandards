@@ -1,0 +1,15 @@
+#pragma mark - life cyle 1、控制器生命周期
+
+#pragma mark - 2、不同业务处理之间的方法以
+
+#pragma mark - Network 3、网络请求
+
+#pragma mark - Action Event 4、响应事件
+
+#pragma mark - Call back 5、回调事件
+
+#pragma mark - Delegate 6、代理、数据源
+
+#pragma mark - interface 7、UI处理
+
+#pragma mark - lazy loading 8、懒加载
